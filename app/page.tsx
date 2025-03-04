@@ -1,8 +1,4 @@
 import PropertyCard from "@/components/PropertyCard";
-import { Button } from "@/components/ui/button";
-import { StarIcon } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
 
 const hotels = [
   {
@@ -82,21 +78,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white shadow-md">
-        <div className="container mx-auto flex justify-between items-center py-4 px-6">
-          <h1 className="text-2xl font-bold text-gray-800">Hotel Booking</h1>
-          <div className="flex space-x-4">
-            <Link href={'/login'}>
-              <Button variant="outline">Login</Button>
-            </Link>
-            <Link href={'/register'}>
-              <Button>Register</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
       {/* Main Content */}
       <main className="container mx-auto py-8 px-6">
         <h2 className="text-3xl font-bold text-gray-800 mb-8">Featured Properties</h2>
