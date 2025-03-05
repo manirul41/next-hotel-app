@@ -2,57 +2,94 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { signIn } from "next-auth/react";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
+import { Input } from "./ui/input";
+import { useForm } from "react-hook-form";
+import { LoginFormData, loginSchema } from "@/lib/loginSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { handleCredentialsSignin, handleGithubSignin } from "@/app/actions/authActions";
 
 export default function LoginForm() {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [globalError, setGlobalError] = useState<string>("");
+  const form = useForm<LoginFormData>({
+      resolver: zodResolver(loginSchema),
+      defaultValues: {
+          email: "",
+          password: "",
+      },
+  });
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    // const res = await fetch("/api/auth/login", {
-    //   method: "POST",
-    //   body: JSON.stringify(form),
-    //   headers: { "Content-Type": "application/json" },
-    // });
-
-    // const data = await res.json();
-    // localStorage.setItem("accessToken", data.accessToken);
-    // localStorage.setItem("refreshToken", data.refreshToken);
-  }
+  const onSubmit = async (values: LoginFormData) => {
+      try {
+          const result = await handleCredentialsSignin(values);
+          if (result?.message) {
+              setGlobalError(result.message);
+          }
+      } catch (error) {
+          console.log("An unexpected error occurred. Please try again.");
+      }
+  };
 
   return (
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
           Login
         </h1>
+        
+        {globalError && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {globalError}
+          </div>
+        )}
 
-        {/* Email/Password Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+        {/* Login Form */}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Email Field */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+
+            {/* Password Field */}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Enter your password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <Button type="submit" className="w-full">
-            Login
-          </Button>
-        </form>
+
+            {/* Submit Button */}
+            <Button type="submit" className="w-full">
+              Login
+            </Button>
+          </form>
+        </Form>
 
         {/* Divider */}
         <div className="flex items-center my-6">
@@ -65,7 +102,7 @@ export default function LoginForm() {
         <Button
           variant="outline"
           className="w-full flex items-center justify-center"
-          onClick={() => signIn("google")}
+          onClick={handleGithubSignin}
         >
           <img
             src="https://www.svgrepo.com/show/355037/google.svg"

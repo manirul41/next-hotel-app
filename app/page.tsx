@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import PropertyCard from "@/components/PropertyCard";
 
 const hotels = [
@@ -74,8 +75,8 @@ const hotels = [
     rating: 4.7,
   },
 ];
-export default function Home() {
-
+export default async function Home() {
+  const session = await auth();
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Main Content */}
@@ -84,7 +85,7 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-6">
           {/* Hotel Property Cards */}
           {hotels?.map((hotel) => (
-            <PropertyCard key={hotel.id} {...hotel} />
+            <PropertyCard key={hotel.id} {...hotel} session={session}/>
           ))}
         </div>
       </main>

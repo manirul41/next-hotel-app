@@ -1,14 +1,19 @@
 // middleware.ts
-import { auth } from "./auth";
-import { NextResponse } from "next/server";
+import { auth } from "@/auth";
+import { NextRequest, NextResponse } from "next/server";
 
-export default auth((req) => {
-//   if (!req.auth) {
-//     // Redirect to login if not authenticated
-//     return NextResponse.redirect(new URL("/login", req.url));
-//   }
-});
+
+export async function middleware(request: NextRequest) {
+  const session = await auth();
+
+  // Redirect unauthenticated users to the login page
+  if (!session && request.nextUrl.pathname.startsWith("/manage-hotels")) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|auth).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|auth).*)", "/manage-hotels/:path*"],
 };

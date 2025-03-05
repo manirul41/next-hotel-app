@@ -1,9 +1,9 @@
 "use client";
 import { PencilIcon, StarIcon, TrashIcon } from "lucide-react";
 import Link from "next/link";
-import { Button } from "./ui/button";
 import ConfirmationModal from "./ConfirmationModal";
 import { useState } from "react";
+import { auth } from "@/auth";
 
 interface PropertyCardProps {
   id: string | number;
@@ -13,6 +13,7 @@ interface PropertyCardProps {
   availableRooms: number;
   image: string;
   rating: number;
+  session: any;
   onDelete?: (id: string | number) => void; // Callback for deletion
 }
 
@@ -25,9 +26,9 @@ export default function PropertyCard({
   image,
   rating,
   onDelete,
+  session,
 }: PropertyCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent card click event
     setIsModalOpen(true); // Open the modal
@@ -46,21 +47,23 @@ export default function PropertyCard({
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer group relative">
       {/* Edit and Delete Icons */}
-      <div className="absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Link
-          href={`/manage-hotels/edit/${id}`}
-          onClick={(e) => e.stopPropagation()} // Prevent card click event
-          className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
-        >
-          <PencilIcon className="w-5 h-5 text-gray-600" />
-        </Link>
-        <button
-          onClick={handleDeleteClick}
-          className="p-2 bg-white rounded-full shadow-md hover:bg-red-50 transition-colors"
-        >
-          <TrashIcon className="w-5 h-5 text-red-600" />
-        </button>
-      </div>
+      {session && (
+        <div className="absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Link
+            href={`/manage-hotels/edit/${id}`}
+            onClick={(e) => e.stopPropagation()} // Prevent card click event
+            className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
+          >
+            <PencilIcon className="w-5 h-5 text-gray-600" />
+          </Link>
+          <button
+            onClick={handleDeleteClick}
+            className="p-2 bg-white rounded-full shadow-md hover:bg-red-50 transition-colors"
+          >
+            <TrashIcon className="w-5 h-5 text-red-600" />
+          </button>
+        </div>
+      )}
 
       {/* Clickable Card Area */}
       <Link href={`/property/${id}`}>
