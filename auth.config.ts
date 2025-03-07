@@ -1,10 +1,10 @@
-// auth.config.ts
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import { loginSchema } from "./lib/loginSchema";
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 
@@ -16,23 +16,24 @@ export const authConfig = {
     }),
     Credentials({
       credentials: {
-          email: { label: "Email", type: "email", placeholder: "Email" },
-          password: { label: "Password", type: "password", placeholder: "Password" },
+        email: { label: "Email", type: "email", placeholder: "Email" },
+        password: {
+          label: "Password",
+          type: "password",
+          placeholder: "Password",
+        },
       },
       async authorize(credentials) {
-          let user = null;
+        const parsedCredentials = loginSchema.safeParse(credentials);
+        if (!parsedCredentials.success) {
+          console.error("Invalid credentials:", parsedCredentials.error.errors);
+          return null;
+        }
 
-          // validate credentials
-          const parsedCredentials = loginSchema.safeParse(credentials);
-          if (!parsedCredentials.success) {
-              console.error("Invalid credentials:", parsedCredentials.error.errors);
-              return null;
-          }
-          // get user
-          const { email, password } = parsedCredentials.data;
+        const { email, password } = parsedCredentials.data;
 
         // Fetch user from the database
-         user = await prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
           where: { email },
         });
 
@@ -48,41 +49,54 @@ export const authConfig = {
           return null;
         }
 
-        return user;
-      }
-  })
+        // Create tokens
+        const accessToken = jwt.sign(
+          { id: user.id, email: user.email },
+          process.env.JWT_SECRET!,
+          { expiresIn: "15m" }
+        );
+
+        const refreshToken = jwt.sign(
+          { id: user.id },
+          process.env.REFRESH_SECRET!,
+          { expiresIn: "7d" }
+        );
+
+        // Log the user object
+        const updatedHotel = await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            refreshToken
+          },
+        });
+
+        return {
+          id: user.id,
+          email: user.email,
+          accessToken,
+          refreshToken,
+        };
+      },
+    }),
   ],
   callbacks: {
-    authorized({ request: { nextUrl }, auth }) {
-        // console.log(auth)
-        const isLoggedIn = !!auth?.user;
-        const { pathname } = nextUrl;
-        // const role = auth?.user.role || 'user';
-        if (pathname.startsWith('/login') && isLoggedIn) {
-            return Response.redirect(new URL('/', nextUrl));
-        }
-        return !!auth;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.accessToken = user.accessToken;
+        token.refreshToken = user.refreshToken;
+      }
+      return token;
     },
-    jwt({ token, user, trigger, session }) {
-      // console.log("token",token)
-        if (user) {
-            token.id = user.id as string;
-            // token.role = user.role as string;
-        }
-        if (trigger === "update" && session) {
-            token = { ...token, ...session };
-        }
-        return token;
+    async session({ session, token }) {
+      session.user.id = token.id;
+      session.user.accessToken = token.accessToken;
+      session.user.refreshToken = token.refreshToken;
+      return session;
     },
-    session({ session, token }) {
-      // console.log("session",token)
-        session.user.id = token.id;
-        // session.user.role = token.role;
-        return session;
-    }
-},
-pages: {
-    signIn: "/login"
-},
+  },
+  pages: {
+    signIn: "/login",
+  },
   secret: process.env.NEXTAUTH_SECRET,
 } satisfies NextAuthConfig;

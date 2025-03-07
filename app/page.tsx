@@ -77,6 +77,9 @@ const hotels = [
 ];
 export default async function Home() {
   const session = await auth();
+  const response = await fetch("http://localhost:3000/api/landing");
+  const data = await response.json();
+  console.log("data", data)
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Main Content */}
@@ -84,8 +87,8 @@ export default async function Home() {
         <h2 className="text-3xl font-bold text-gray-800 mb-8">Featured Properties</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-6">
           {/* Hotel Property Cards */}
-          {hotels?.map((hotel) => (
-            <PropertyCard key={hotel.id} {...hotel} session={session}/>
+          {data?.hotels?.map((hotel) => (
+            <PropertyCard key={hotel.id} {...hotel} session={''}/>
           ))}
         </div>
       </main>

@@ -1,5 +1,6 @@
 "use client";
 import { StarIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface PropertyDetailsProps {
   params: {
@@ -7,36 +8,68 @@ interface PropertyDetailsProps {
   };
 }
 
+interface Property {
+  id: string;
+  name: string;
+  address: string;
+  costPerNight: number;
+  availableRooms: number;
+  image: string;
+  rating: number;
+  description: string;
+}
+
 export default function PropertyDetails({ params }: PropertyDetailsProps) {
-  // Fetch property details based on ID (replace with actual data fetching logic)
-  const property = {
-    id: params.id,
-    name: "Luxury Resort & Spa",
-    address: "123 Beachfront Ave, Miami, FL",
-    costPerNight: 250,
-    availableRooms: 10,
-    image: "https://dummyimage.com/800x400",
-    rating: 4.5,
-    description:
-      "Experience luxury at its finest with our world-class amenities and stunning beachfront views.",
-  };
+  const [property, setProperty] = useState<Property | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProperty = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/api/landing/${params.id}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch property details");
+        }
+        const data = await response.json();
+        setProperty(data?.hotel);
+      } catch (error) {
+        console.error("Error fetching property:", error);
+        setError("Failed to fetch property details");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperty();
+  }, [params.id]);
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-gray-100">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  if (!property) {
+    return <div>No property found</div>;
+  }
 
   // Construct the property URL
   const propertyUrl = `http://localhost:3000/property/${property.id}`;
 
   // Social Media Sharing URLs
   const socialMediaLinks = {
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-      propertyUrl
-    )}`,
-    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-      propertyUrl
-    )}&text=${encodeURIComponent(
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(propertyUrl)}`,
+    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(propertyUrl)}&text=${encodeURIComponent(
       `Check out this amazing property: ${property.name}`
     )}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-      propertyUrl
-    )}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(propertyUrl)}`,
   };
 
   return (

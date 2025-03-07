@@ -7,12 +7,13 @@ const prisma = new PrismaClient();
 export async function POST(request: Request) {
   try {
     const session = await auth();
-    if (!session) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    // console.log("first request222", session);
+    // if (!session) {
+    //   return NextResponse.json(
+    //     { error: "Unauthorized" },
+    //     { status: 401 }
+    //   );
+    // }
 
     const { name, address, costPerNight, availableRooms, image, rating } = await request.json();
 
@@ -41,20 +42,19 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    // const session = await auth();
-    // console.log("first request", session);
-    // if (!session) {
+    const session = await auth();
+    console.log("first request", session);
+    // if (session) {
     //   return NextResponse.json(
     //     { error: "Unauthorized" },
     //     { status: 401 }
     //   );
     // }
 
-    // Fetch hotels for the authenticated user
     const hotels = await prisma.hotel.findMany({
-      // where: {
-      //   userId: parseInt(session.user.id), // Filter by user ID
-      // },
+      where: {
+        userId: parseInt(session.user.id ?? ''), // Filter by user ID
+      },
     });
 
     return NextResponse.json({ hotels }, { status: 200 });

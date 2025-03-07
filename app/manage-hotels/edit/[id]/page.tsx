@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import useAuthFetch from "@/hooks/useAuthFetch";
+import { useSession } from "next-auth/react";
 
 interface EditHotelPageProps {
   params: {
@@ -24,8 +26,6 @@ interface EditHotelPageProps {
 
 export default function EditHotelPage({ params }: EditHotelPageProps) {
   const router = useRouter();
-
-  // Initialize React Hook Form with Zod resolver
   const form = useForm<HotelFormData>({
     resolver: zodResolver(hotelSchema),
     defaultValues: {
@@ -37,17 +37,12 @@ export default function EditHotelPage({ params }: EditHotelPageProps) {
       rating: 0,
     },
   });
-
-  // Fetch hotel data from the API
-  useEffect(() => {
-    const fetchHotel = async () => {
-      try {
-        const response = await fetch(`/api/hotels/${params.id}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch hotel");
-        }
-
-        const { hotel } = await response.json();
+     const { data: session } = useSession();
+  
+    useEffect(() => {
+      fetchWithAuth().then((data) => {
+        if (data && data.hotel) {
+          const { hotel } = data;
         form.reset({
           name: hotel.name,
           address: hotel.address,
@@ -56,13 +51,40 @@ export default function EditHotelPage({ params }: EditHotelPageProps) {
           image: hotel.image,
           rating: hotel.rating,
         });
-      } catch (error) {
-        console.error("Error fetching hotel:", error);
-      }
-    };
+        }
+      });
+    }, [params.id, form]);
 
-    fetchHotel();
-  }, [params.id, form]);
+    const { fetchWithAuth, loading } = useAuthFetch(`/api/hotels/${params.id}`);
+
+  // Initialize React Hook Form with Zod resolver
+
+
+  // Fetch hotel data from the API
+  // useEffect(() => {
+  //   const fetchHotel = async () => {
+  //     try {
+  //       const response = await fetch(`/api/hotels/${params.id}`);
+  //       if (!response.ok) {
+  //         throw new Error("Failed to fetch hotel");
+  //       }
+
+  //       const { hotel } = await response.json();
+  //       form.reset({
+  //         name: hotel.name,
+  //         address: hotel.address,
+  //         costPerNight: hotel.costPerNight,
+  //         availableRooms: hotel.availableRooms,
+  //         image: hotel.image,
+  //         rating: hotel.rating,
+  //       });
+  //     } catch (error) {
+  //       console.error("Error fetching hotel:", error);
+  //     }
+  //   };
+
+  //   fetchHotel();
+  // }, [params.id, form]);
 
   // Handle form submission
   const onSubmit = async (data: HotelFormData) => {
@@ -71,6 +93,7 @@ export default function EditHotelPage({ params }: EditHotelPageProps) {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.user.accessToken}`,
         },
         body: JSON.stringify(data),
       });

@@ -1,21 +1,24 @@
+"use client"
 import { auth } from "@/auth";
 import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
+import useAuthFetch  from "@/hooks/useAuthFetch";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-export default async function ManageHotelsPage() {
-  const session = await auth();
+export default function ManageHotelsPage() {
+  const [hotels, setHotels] = useState([]);
+  const { fetchWithAuth, loading } = useAuthFetch("/api/hotels");
+   const { data: session } = useSession();
 
-  // Fetch hotels from the API
-  const response = await fetch("http://localhost:3000/api/hotels", {
-    cache: "no-store", // Ensure fresh data is fetched
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch hotels");
-  }
-
-  const { hotels } = await response.json();
+  useEffect(() => {
+    fetchWithAuth().then((data) => {
+      if (data && data.hotels) {
+        setHotels(data.hotels);
+      }
+    });
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
@@ -26,7 +29,6 @@ export default async function ManageHotelsPage() {
             <Button>Create Hotel</Button>
           </Link>
         </div>
-
         {/* List of Hotels */}
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-6">
           {hotels.map((hotel: any) => (

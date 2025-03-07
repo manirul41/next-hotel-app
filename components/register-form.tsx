@@ -120,7 +120,7 @@ export default function RegisterForm() {
       {/* Login Link */}
       <p className="mt-6 text-center text-gray-600">
         Already have an account?{" "}
-        <a href="/auth/login" className="text-blue-500 hover:underline">
+        <a href="/login" className="text-blue-500 hover:underline">
           Login
         </a>
       </p>

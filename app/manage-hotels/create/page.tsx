@@ -43,10 +43,11 @@ export default function CreateHotelPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.user.accessToken}`,
         },
         body: JSON.stringify({
           ...data,
-          userId: session.user.id, // Include the userId
+          userId: parseInt(session.user.id), // Include the userId
         }),
       });
 
@@ -55,6 +56,7 @@ export default function CreateHotelPage() {
         router.push("/manage-hotels");
       } else {
         const errorData = await response.json();
+        console.log(errorData);
         alert(errorData.error || "Failed to create hotel");
       }
     } catch (error) {
