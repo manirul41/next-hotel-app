@@ -70,6 +70,7 @@ The app will be running at `http://localhost:3000`.
 2. Enable **CI/CD** for automatic deployments.
 3. Add the environment variables in the Netlify dashboard under **Site Settings > Environment Variables**.
 4. Deploy the app.
+Live Link: https://next-hotel-app.netlify.app/
 
 ---
 
