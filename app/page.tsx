@@ -52,7 +52,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-100">
       {/* Main Content */}
       <main className="container mx-auto py-8 px-6">
-        <h2 className="text-3xl font-bold text-gray-800 mb-8">Featured Properties</h2>
+        <h2 className="text-3xl font-bold text-gray-800 mb-8">Featured Property</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-6">
           {/* Hotel Property Cards */}
           {paginatedHotels.map((hotel) => (
