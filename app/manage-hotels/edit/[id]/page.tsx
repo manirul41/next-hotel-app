@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import useAuthFetch from "@/hooks/useAuthFetch";
 import { useSession } from "next-auth/react";
+import { ArrowBigLeft } from "lucide-react";
 
 
 export default function EditHotelPage({ params }: any) {
@@ -91,18 +92,18 @@ export default function EditHotelPage({ params }: any) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="container mx-auto px-6">
+    <div className="min-h-screen bg-gray-100 py-8 flex items-center justify-center">
+      <div className="w-full max-w-[600px] bg-white p-8 rounded-lg shadow-lg">
         {/* Back Button */}
         <Button
           variant="outline"
           onClick={handleBack}
           className="mb-6"
         >
-          Back to Manage Hotels
+          <ArrowBigLeft/> Back
         </Button>
 
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">Edit Hotel</h1>
+        <h1 className="text-2xl font-medium text-gray-800 mb-8 text-center">Update Hotel Information</h1>
 
         {/* Hotel Edit Form */}
         <Form {...form}>

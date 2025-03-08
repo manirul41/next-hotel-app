@@ -3,6 +3,7 @@ import { PencilIcon, StarIcon, TrashIcon } from "lucide-react";
 import Link from "next/link";
 import ConfirmationModal from "./ConfirmationModal";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface PropertyCardProps {
   id: string | number;
@@ -13,7 +14,6 @@ interface PropertyCardProps {
   image: string;
   rating: number;
   session: any;
-  onDelete?: (id: string | number) => void; // Callback for deletion
 }
 
 export default function PropertyCard({
@@ -24,14 +24,38 @@ export default function PropertyCard({
   availableRooms,
   image,
   rating,
-  onDelete,
   session,
 }: PropertyCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent card click event
     setIsModalOpen(true); // Open the modal
   };
+
+  const onDelete = async (hotelId: number) => {
+      try {
+        const response = await fetch("/api/hotels", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            // @ts-ignore
+            Authorization: `Bearer ${session?.user.accessToken}`,
+          },
+          body: JSON.stringify({ id: hotelId }),
+        });
+  
+        if (!response.ok) {
+          throw new Error("Failed to delete hotel");
+        }
+  
+        // Remove the deleted hotel from the state
+        alert("Hotel deleted successfully");
+        router.push('/manage-hotels');
+      } catch (error) {
+        console.error("Error deleting hotel:", error);
+      }
+    };
 
   const handleConfirmDelete = () => {
     // @ts-ignore

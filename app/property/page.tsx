@@ -3,81 +3,6 @@ import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
-// Sample data for hotel properties
-// const hotels = [
-//     {
-//       id: 1,
-//       name: "Luxury Resort & Spa",
-//       address: "123 Beachfront Ave, Miami, FL",
-//       costPerNight: 250,
-//       availableRooms: 10,
-//       image: "https://dummyimage.com/400x250",
-//       rating: 3.5,
-//     },
-//     {
-//       id: 2,
-//       name: "Mountain View Lodge",
-//       address: "456 Mountain Rd, Aspen, CO",
-//       costPerNight: 180,
-//       availableRooms: 5,
-//       image: "https://dummyimage.com/400x250",
-//       rating: 4.2,
-//     },
-//     {
-//       id: 3,
-//       name: "City Central Hotel",
-//       address: "789 Downtown St, New York, NY",
-//       costPerNight: 300,
-//       availableRooms: 8,
-//       image: "https://dummyimage.com/400x250",
-//       rating: 4.7,
-//     },
-//     {
-//       id: 4,
-//       name: "City Central Hotel",
-//       address: "789 Downtown St, New York, NY",
-//       costPerNight: 300,
-//       availableRooms: 8,
-//       image: "https://dummyimage.com/400x250",
-//       rating: 4.7,
-//     },
-//     {
-//       id: 5,
-//       name: "City Central Hotel",
-//       address: "789 Downtown St, New York, NY",
-//       costPerNight: 300,
-//       availableRooms: 8,
-//       image: "https://dummyimage.com/400x250",
-//       rating: 4.7,
-//     },
-//     {
-//       id: 6,
-//       name: "City Central Hotel",
-//       address: "789 Downtown St, New York, NY",
-//       costPerNight: 300,
-//       availableRooms: 8,
-//       image: "https://dummyimage.com/400x250",
-//       rating: 4.7,
-//     },
-//     {
-//       id: 7,
-//       name: "City Central Hotel",
-//       address: "789 Downtown St, New York, NY",
-//       costPerNight: 300,
-//       availableRooms: 8,
-//       image: "https://dummyimage.com/400x250",
-//       rating: 4.7,
-//     },
-//     {
-//       id: 8,
-//       name: "City Central Hotel",
-//       address: "789 Downtown St, New York, NY",
-//       costPerNight: 300,
-//       availableRooms: 8,
-//       image: "https://dummyimage.com/400x250",
-//       rating: 4.7,
-//     },
-//   ];
 
 export default function HotelsPage() {
   const itemsPerPage = 8; // Number of properties per page
@@ -114,6 +39,14 @@ export default function HotelsPage() {
 
     fetchHotels();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-gray-100">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
   
 
   return (

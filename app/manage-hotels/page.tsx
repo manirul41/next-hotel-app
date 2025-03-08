@@ -1,35 +1,22 @@
-"use client"
-import PropertyCard from "@/components/PropertyCard";
-import { Button } from "@/components/ui/button";
-import useAuthFetch from "@/hooks/useAuthFetch";
-import { useSession } from "next-auth/react";
+import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import PropertyCard from "@/components/PropertyCard";
+import { auth } from "@/auth";
 
-export default function ManageHotelsPage() {
-  const [hotels, setHotels] = useState([]);
-  const { fetchWithAuth, loading } = useAuthFetch("/api/hotels");
-  const { data: session } = useSession();
+const prisma = new PrismaClient();
+const itemsPerPage = 8;
 
-  useEffect(() => {
-    fetchWithAuth().then((data) => {
-      if (data && data.hotels) {
-        setHotels(data.hotels);
-      }
-    });
-  }, []);
+export default async function ManageHotelsPage({ searchParams }: any) {
+  const session = await auth();
+  if (!session) return <p>Please log in to manage hotels.</p>;
 
-  if (loading) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-gray-100">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
-  const onDelete = () => {
-    console.log("deleted");
-  }
+  const currentPage = Number(searchParams?.page) || 1;
+  const totalHotels = await prisma.hotel.count();
+  const hotels = await prisma.hotel.findMany({
+    skip: (currentPage - 1) * itemsPerPage,
+    take: itemsPerPage,
+  });
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
@@ -40,11 +27,26 @@ export default function ManageHotelsPage() {
             <Button>Create Hotel</Button>
           </Link>
         </div>
-        {/* List of Hotels */}
+
+        {/* Hotel List */}
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-6">
-          {hotels.map((hotel: any) => (
-            <PropertyCard key={hotel.id} {...hotel} session={session} onDelete={onDelete}/>
+          {hotels.map((hotel) => (
+            <PropertyCard key={hotel.id} {...hotel} session={session} />
           ))}
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex justify-center mt-8 space-x-4">
+          {currentPage > 1 && (
+            <Link href={`/manage-hotels?page=${currentPage - 1}`}>
+              <Button variant="outline">Previous</Button>
+            </Link>
+          )}
+          {currentPage * itemsPerPage < totalHotels && (
+            <Link href={`/manage-hotels?page=${currentPage + 1}`}>
+              <Button variant="outline">Next</Button>
+            </Link>
+          )}
         </div>
       </div>
     </div>

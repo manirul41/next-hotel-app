@@ -66,3 +66,52 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  console.log("called")
+  try {
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const { id } = await request.json();
+
+    const hotel = await prisma.hotel.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    if (!hotel) {
+      return NextResponse.json(
+        { error: "Hotel not found" },
+        { status: 404 }
+      );
+    }
+
+    if (hotel.userId !== parseInt(session?.user?.id ?? "")) {
+      return NextResponse.json(
+        { error: "You are not authorized to delete this hotel" },
+        { status: 403 }
+      );
+    }
+
+    // Delete the hotel
+    await prisma.hotel.delete({
+      where: { id: parseInt(id) },
+    });
+
+    return NextResponse.json(
+      { message: "Hotel deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error deleting hotel:", error);
+    return NextResponse.json(
+      { error: "Failed to delete hotel" },
+      { status: 500 }
+    );
+  }
+}

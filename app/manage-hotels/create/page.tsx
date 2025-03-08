@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { ArrowBigLeft } from "lucide-react";
 
 export default function CreateHotelPage() {
   const router = useRouter();
@@ -71,27 +72,45 @@ export default function CreateHotelPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="container mx-auto px-6">
-        <Button variant="outline" onClick={handleBack} className="mb-6">
-          Back to Manage Hotels
+    <div className="min-h-screen bg-gray-100 py-8 flex items-center justify-center">
+      <div className="w-full max-w-[600px] bg-white p-8 rounded-lg shadow-lg">
+        {/* Back Button */}
+        <Button
+          variant="outline"
+          onClick={handleBack}
+          className="mb-6 hover:bg-gray-100 transition-colors"
+        >
+          <ArrowBigLeft/> Back
         </Button>
 
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">Create Hotel</h1>
+        {/* Form Title */}
+        <h1 className="text-2xl font-medium text-gray-800 mb-8 text-center">
+          Create Hotel
+        </h1>
 
+        {/* Form */}
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="bg-white p-6 rounded-lg shadow-md space-y-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6"
+          >
             {/* Name Field */}
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel className="text-gray-700 font-medium">
+                    Name
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter hotel name" {...field} />
+                    <Input
+                      placeholder="Enter hotel name"
+                      {...field}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-500 text-sm" />
                 </FormItem>
               )}
             />
@@ -102,11 +121,17 @@ export default function CreateHotelPage() {
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel className="text-gray-700 font-medium">
+                    Address
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter hotel address" {...field} />
+                    <Input
+                      placeholder="Enter hotel address"
+                      {...field}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-500 text-sm" />
                 </FormItem>
               )}
             />
@@ -117,16 +142,19 @@ export default function CreateHotelPage() {
               name="costPerNight"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Cost per Night</FormLabel>
+                  <FormLabel className="text-gray-700 font-medium">
+                    Cost per Night
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       placeholder="Enter cost per night"
                       {...field}
                       onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-500 text-sm" />
                 </FormItem>
               )}
             />
@@ -137,16 +165,19 @@ export default function CreateHotelPage() {
               name="availableRooms"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Available Rooms</FormLabel>
+                  <FormLabel className="text-gray-700 font-medium">
+                    Available Rooms
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       placeholder="Enter number of available rooms"
                       {...field}
                       onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-500 text-sm" />
                 </FormItem>
               )}
             />
@@ -157,11 +188,17 @@ export default function CreateHotelPage() {
               name="image"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Image URL</FormLabel>
+                  <FormLabel className="text-gray-700 font-medium">
+                    Image URL
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter image URL" {...field} />
+                    <Input
+                      placeholder="Enter image URL"
+                      {...field}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-500 text-sm" />
                 </FormItem>
               )}
             />
@@ -172,7 +209,9 @@ export default function CreateHotelPage() {
               name="rating"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Rating</FormLabel>
+                  <FormLabel className="text-gray-700 font-medium">
+                    Rating
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -182,13 +221,15 @@ export default function CreateHotelPage() {
                       step="0.1"
                       {...field}
                       onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-500 text-sm" />
                 </FormItem>
               )}
             />
 
+            {/* Submit Button */}
             {/* Submit Button */}
             <Button type="submit" className="w-full mt-6">
               Create Hotel
