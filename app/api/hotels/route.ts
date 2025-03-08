@@ -1,19 +1,19 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { auth } from "@/auth";
 
 const prisma = new PrismaClient();
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const session = await auth();
     // console.log("first request222", session);
-    // if (!session) {
-    //   return NextResponse.json(
-    //     { error: "Unauthorized" },
-    //     { status: 401 }
-    //   );
-    // }
+    if (!session) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
 
     const { name, address, costPerNight, availableRooms, image, rating } = await request.json();
 
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
         availableRooms,
         image,
         rating,
-        userId: parseInt(session.user.id),
+        userId: parseInt(session?.user?.id ?? ''),
       },
     });
 
@@ -40,20 +40,20 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    console.log("first request", session);
-    // if (session) {
-    //   return NextResponse.json(
-    //     { error: "Unauthorized" },
-    //     { status: 401 }
-    //   );
-    // }
+    // console.log("first request", session);
+    if (!session) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
 
     const hotels = await prisma.hotel.findMany({
       where: {
-        userId: parseInt(session.user.id ?? ''), // Filter by user ID
+        userId: parseInt(session?.user?.id ?? ''), // Filter by user ID
       },
     });
 

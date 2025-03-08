@@ -15,7 +15,8 @@ const useAuthFetch = (url: string) => {
       const res = await fetch(url, {
         cache: "no-store",
         headers: {
-          Authorization: `Bearer ${session_ck?.user.accessToken}`,
+          // @ts-ignore
+          Authorization: `Bearer ${session_ck?.user?.accessToken ?? ''}`,
         },
       });
       
@@ -23,6 +24,7 @@ const useAuthFetch = (url: string) => {
         const refreshRes = await fetch("/api/refresh-token", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          // @ts-ignore
           body: JSON.stringify({ refreshToken: session_ck?.user.refreshToken }),
         });
 

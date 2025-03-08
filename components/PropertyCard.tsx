@@ -3,7 +3,6 @@ import { PencilIcon, StarIcon, TrashIcon } from "lucide-react";
 import Link from "next/link";
 import ConfirmationModal from "./ConfirmationModal";
 import { useState } from "react";
-import { auth } from "@/auth";
 
 interface PropertyCardProps {
   id: string | number;
@@ -35,12 +34,23 @@ export default function PropertyCard({
   };
 
   const handleConfirmDelete = () => {
-    // onDelete(id); // Trigger deletion
+    // @ts-ignore
+    onDelete(id); // Trigger deletion
     setIsModalOpen(false); // Close the modal
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false); // Close the modal
+  };
+
+  const StarRating = ({ count = 5, filled = 0 }) => {
+    if (count === 0) return null;
+    return (
+      <>
+        <StarIcon className={`h-5 w-5 ${filled > 0 ? "text-yellow-400" : "text-gray-300"}`} />
+        <StarRating count={count - 1} filled={filled - 1} />
+      </>
+    );
   };
 
 
@@ -89,16 +99,7 @@ export default function PropertyCard({
             </p>
             <div className="flex items-center">
               <span className="text-yellow-500 flex">
-                {[...Array(5)].map((_, i) => (
-                  <StarIcon
-                    key={i}
-                    className={`h-5 w-5 ${
-                      i < Math.floor(rating)
-                        ? "text-yellow-400"
-                        : "text-gray-300"
-                    }`}
-                  />
-                ))}
+              <StarRating count={5} filled={Math.floor(rating || 0)} />
               </span>
               <span className="ml-2 text-gray-600">({rating.toFixed(1)})</span>
             </div>

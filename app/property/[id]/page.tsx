@@ -1,6 +1,6 @@
 "use client";
 import { StarIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 interface PropertyDetailsProps {
   params: {
@@ -19,7 +19,8 @@ interface Property {
   description: string;
 }
 
-export default function PropertyDetails({ params }: PropertyDetailsProps) {
+export default function PropertyDetails({ params }: any) {
+  const { id } : any= use(params)
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +28,7 @@ export default function PropertyDetails({ params }: PropertyDetailsProps) {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/landing/${params.id}`);
+        const response = await fetch(`/api/landing/${id}`);
         if (!response.ok) {
           throw new Error("Failed to fetch property details");
         }
@@ -42,7 +43,7 @@ export default function PropertyDetails({ params }: PropertyDetailsProps) {
     };
 
     fetchProperty();
-  }, [params.id]);
+  }, [id]);
 
   if (loading) {
     return (
@@ -61,7 +62,7 @@ export default function PropertyDetails({ params }: PropertyDetailsProps) {
   }
 
   // Construct the property URL
-  const propertyUrl = `http://localhost:3000/property/${property.id}`;
+  const propertyUrl = `${process.env.API_SERVER_BASE_URL}/property/${property.id}`;
 
   // Social Media Sharing URLs
   const socialMediaLinks = {
@@ -70,6 +71,16 @@ export default function PropertyDetails({ params }: PropertyDetailsProps) {
       `Check out this amazing property: ${property.name}`
     )}`,
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(propertyUrl)}`,
+  };
+
+  const StarRating = ({ count = 5, filled = 0 }) => {
+    if (count === 0) return null;
+    return (
+      <>
+        <StarIcon className={`h-5 w-5 ${filled > 0 ? "text-yellow-400" : "text-gray-300"}`} />
+        <StarRating count={count - 1} filled={filled - 1} />
+      </>
+    );
   };
 
   return (
@@ -96,16 +107,7 @@ export default function PropertyDetails({ params }: PropertyDetailsProps) {
             </p>
             <div className="flex items-center mb-4">
               <span className="text-yellow-500 flex">
-                {[...Array(5)].map((_, i) => (
-                  <StarIcon
-                    key={i}
-                    className={`h-5 w-5 ${
-                      i < Math.floor(property.rating)
-                        ? "text-yellow-400"
-                        : "text-gray-300"
-                    }`}
-                  />
-                ))}
+              <StarRating count={5} filled={Math.floor(property?.rating || 0)} />
               </span>
               <span className="ml-2 text-gray-600">
                 ({property.rating.toFixed(1)})

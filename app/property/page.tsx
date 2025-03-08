@@ -98,7 +98,7 @@ export default function HotelsPage() {
       setError(null);
 
       try {
-        const response = await fetch("http://localhost:3000/api/landing");
+        const response = await fetch("/api/landing");
         if (!response.ok) {
           throw new Error("Failed to fetch hotels");
         }
@@ -119,7 +119,7 @@ export default function HotelsPage() {
   return (
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="container mx-auto px-6">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">List of Hotel's Properties</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">List of Hotel&apos;s Properties</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {paginatedHotels.map((hotel) => (
             <PropertyCard key={hotel.id} {...hotel} />

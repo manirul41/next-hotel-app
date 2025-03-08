@@ -12,7 +12,7 @@ export default async function Header() {
       <div className="container mx-auto flex justify-between items-center py-4 px-6">
         {/* Logo */}
         <Link href="/">
-          <h1 className="text-2xl font-bold text-gray-800">Hotel Booking</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Hotel/Properties</h1>
         </Link>
 
         {/* Right Side: Login/Register or Dropdown */}

@@ -1,6 +1,6 @@
 "use client"; // Mark as a Client Component
 
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { hotelSchema, HotelFormData } from "@/lib/hotelSchema";
@@ -18,13 +18,9 @@ import { useRouter } from "next/navigation";
 import useAuthFetch from "@/hooks/useAuthFetch";
 import { useSession } from "next-auth/react";
 
-interface EditHotelPageProps {
-  params: {
-    id: string;
-  };
-}
 
-export default function EditHotelPage({ params }: EditHotelPageProps) {
+export default function EditHotelPage({ params }: any) {
+  const { id } : any = use(params);
   const router = useRouter();
   const form = useForm<HotelFormData>({
     resolver: zodResolver(hotelSchema),
@@ -37,12 +33,12 @@ export default function EditHotelPage({ params }: EditHotelPageProps) {
       rating: 0,
     },
   });
-     const { data: session } = useSession();
-  
-    useEffect(() => {
-      fetchWithAuth().then((data) => {
-        if (data && data.hotel) {
-          const { hotel } = data;
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    fetchWithAuth().then((data) => {
+      if (data && data.hotel) {
+        const { hotel } = data;
         form.reset({
           name: hotel.name,
           address: hotel.address,
@@ -51,48 +47,20 @@ export default function EditHotelPage({ params }: EditHotelPageProps) {
           image: hotel.image,
           rating: hotel.rating,
         });
-        }
-      });
-    }, [params.id, form]);
+      }
+    });
+  }, [id, form]);
 
-    const { fetchWithAuth, loading } = useAuthFetch(`/api/hotels/${params.id}`);
-
-  // Initialize React Hook Form with Zod resolver
-
-
-  // Fetch hotel data from the API
-  // useEffect(() => {
-  //   const fetchHotel = async () => {
-  //     try {
-  //       const response = await fetch(`/api/hotels/${params.id}`);
-  //       if (!response.ok) {
-  //         throw new Error("Failed to fetch hotel");
-  //       }
-
-  //       const { hotel } = await response.json();
-  //       form.reset({
-  //         name: hotel.name,
-  //         address: hotel.address,
-  //         costPerNight: hotel.costPerNight,
-  //         availableRooms: hotel.availableRooms,
-  //         image: hotel.image,
-  //         rating: hotel.rating,
-  //       });
-  //     } catch (error) {
-  //       console.error("Error fetching hotel:", error);
-  //     }
-  //   };
-
-  //   fetchHotel();
-  // }, [params.id, form]);
+  const { fetchWithAuth, loading } = useAuthFetch(`/api/hotels/${id}`);
 
   // Handle form submission
   const onSubmit = async (data: HotelFormData) => {
     try {
-      const response = await fetch(`/api/hotels/${params.id}`, {
+      const response = await fetch(`/api/hotels/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          // @ts-ignore
           Authorization: `Bearer ${session?.user.accessToken}`,
         },
         body: JSON.stringify(data),
@@ -113,6 +81,14 @@ export default function EditHotelPage({ params }: EditHotelPageProps) {
   const handleBack = () => {
     router.push("/manage-hotels"); // Navigate back to Manage Hotels Page
   };
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-gray-100">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">

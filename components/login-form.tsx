@@ -1,13 +1,11 @@
 "use client";
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { signIn } from "next-auth/react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
 import { useForm } from "react-hook-form";
 import { LoginFormData, loginSchema } from "@/lib/loginSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { handleCredentialsSignin, handleGithubSignin } from "@/app/actions/authActions";
 
 export default function LoginForm() {
@@ -114,7 +112,7 @@ export default function LoginForm() {
 
         {/* Sign Up Link */}
         <p className="mt-6 text-center text-gray-600">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <a href="/register" className="text-blue-500 hover:underline">
             Sign Up
           </a>

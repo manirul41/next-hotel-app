@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { SignJWT, jwtVerify } from "jose";
+import { SignJWT } from "jose";
 
 const prisma = new PrismaClient();
 const accessSecret = new TextEncoder().encode(process.env.JWT_SECRET);
@@ -24,7 +24,7 @@ const generateRefreshToken = async (user: any) => {
     .sign(refreshSecret);
 };
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { refreshToken } = await request.json();
     if (!refreshToken) {
