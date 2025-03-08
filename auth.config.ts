@@ -78,6 +78,7 @@ export const authConfig = {
       },
     }),
   ],
+  trustHost: true,
   callbacks: {
     async signIn({ user, account, profile }) {
       // Handle Google OAuth sign-in
