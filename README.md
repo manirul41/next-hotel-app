@@ -36,7 +36,10 @@ GOOGLE_CLIENT_SECRET="your_google_client_secret"
 ```
 
 ### 5. Initialize Prisma
-Initialize Prisma ` npx prisma init` and update the `schema.prisma` file with the following configuration:
+Initialize Prisma and update the `schema.prisma` file with the following configuration:
+```bash
+npx prisma init
+```
 ```prisma
 datasource db {
   provider = "postgresql"
